@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: stg_logistic__customers
+    description: Information about customer name, contact or when the accaunt was created)
+    columns:
+      - name: customer_id
+        description: Unique identifier for each customers (e.g., C00004, C00048)
+      - name: customer_name
+        description: Full name of the customer
+      - name: city
+        description: City where customer is based (origin for orders)
+      - name: email
+        description: Customer's registered email address
+        tests:
+          - not_null
+          - unique
+      - name: phone_number
+        description: Customer's phone number for contact and delivery coordination
+      - name: create_at
+        description: Timestamp when the customer's account was created
+
+  - name: stg_logistic__orders
+    description: Information who, when, how much value of orders
+    columns:
+      - name: order_id
+        description: Unique identifier for each orders (e.g., O01008, O02400)
+      - name: customer_id
+        description: Foreign key, linking order to customer
+      - name: order_date
+        description: Date when the order was placed
+      - name: order_value
+        description: Total value of an order in IDR
+
+  - name: stg_logistic__shipments
+    description: Information needed to deliver each shipment
+    columns:
+      - name: shipment_id
+        description: Unique identifier for each shipments (e.g., S001015, S001043)
+      - name: order_id
+        description: Foreign key, linking shipment to order
+      - name: origin_city
+        description: The city where the shipment originated
+      - name: destination_city
+        description: The city where the shipment is being delivered
+      - name: shipment_value
+        description: Declared value of the shipment
+      - name: current_status
+        description: Current status of the shipment (e.g., Delivered, In Transit, Pending)
+      - name: expected_delivery_date
+        description: The promised delivery date based on SLA
+      - name: actual_delivery_date
+        description: The date when shipment was actually delivered (null if not delivered yet)
+      - name: create_at
+        description: Timestamp when each shipment was created
+
+  - name: stg_logistic__delivery_updates
+    description: Information about what and when the status of each shipment changed
+    columns:
+      - name: update_id
+        description: Unique identifier for each delivery update (e.g., U000098, U000042)
+      - name: shipment_id
+        description: Foreign key, linking update to shipment
+      - name: update_timestamp
+        description: The exact datetime when the update was logged (e.g., 2023-11-02 10:30:00)
+      - name: status
+        description: Status update for the shipment (e.g., Created, Dispatched, In Transit, Delivered)

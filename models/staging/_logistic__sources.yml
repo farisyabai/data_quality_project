@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw_logistic # Logical grouping name for your raw sources
+    database: neondb   # Your Neon database name
+    schema: public     # The schema where you put your manual raw data
+    tables:
+      - name: customers
+      - name: orders
+      - name: shipments
+      - name: delivery_updates
