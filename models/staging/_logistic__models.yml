@@ -13,8 +13,15 @@ models:
       - name: email
         description: Customer's registered email address
         tests:
-          - not_null
-          - unique
+          - unique:
+              config:
+                severity: warn
+                store_failures: true 
+                tags: ['critical_alert']
+          - not_null:
+              config:
+                severity: error
+                store_failures: true
       - name: phone_number
         description: Customer's phone number for contact and delivery coordination
       - name: create_at
