@@ -1,0 +1,15 @@
+version: 2
+
+
+models:
+  - name: d1_2_email_pattern_failures
+    tests:
+      - fewer_than_pct_of_rows_check:
+        
+          config:
+            severity: error
+            tags: ['critical_alert']
+
+          arguments:
+            to: stg_logistic__customers
+            at_least_percent: 0.05
