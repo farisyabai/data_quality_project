@@ -1,0 +1,63 @@
+version: 2
+
+
+models:
+  - name: d1_2_email_pattern_failures
+    tests:
+      - failure_row_rates:        
+          config:
+            severity: warn
+            tags: ['soft_alert']        
+          arguments:
+            to: stg_logistic__customers
+            failure_rate: 0.02
+
+  - name: d2_1_phone_number_pattern_failures
+    tests:
+      - failure_row_rates:        
+          config:
+            severity: warn
+            tags: ['soft_alert'] 
+          arguments:
+            to: stg_logistic__customers
+            failure_rate: 0.05
+
+  - name: d2_2_phone_number_length_failures
+    tests:
+      - failure_row_rates:        
+          config:
+            severity: warn
+            tags: ['soft_alert'] 
+          arguments:
+            to: stg_logistic__customers
+            failure_rate: 0.05
+
+  - name: d4_stalled_shipments
+    tests:
+      - failure_row_rates:        
+          config:
+            severity: warn
+            tags: ['soft_alert'] 
+          arguments:
+            to: stg_logistic__shipments
+            failure_rate: 0.05
+
+  - name: d5_teleport_shipments
+    tests:
+      - failure_row_rates:        
+          config:
+            severity: warn
+            tags: ['soft_alert'] 
+          arguments:
+            to: stg_logistic__shipments
+            failure_rate: 0.02
+
+  - name: d14_missing_actual_delivery_date
+    tests:
+      - failure_row_rates:        
+          config:
+            severity: error
+            tags: ['critical_alert'] 
+          arguments:
+            to: stg_logistic__shipments
+            failure_rate: 0.01

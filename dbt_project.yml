@@ -40,9 +40,17 @@ models:
       +tags: ["staging"]
       +schema: staging
 
+    dq_models:
+      +materialized: table
+      +schema: dq_models
+
     dq_enforcement:
       +materialized: table
       +schema: dq_enforcement
 
 tests:
+  +store_failures: true
   +schema: dq_enforcement
+flags:
+  require_generic_test_arguments_property: true
+
