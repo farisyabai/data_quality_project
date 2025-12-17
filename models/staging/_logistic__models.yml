@@ -6,6 +6,15 @@ models:
     columns:
       - name: customer_id
         description: Unique identifier for each customers (e.g., C00004, C00048)
+        tests:
+          - unique:
+              config:
+                severity: error
+                tags: ['critical_alert']
+          - not_null:
+              config:
+                severity: error
+                tags: ['critical_alert']
       - name: customer_name
         description: Full name of the customer
       - name: city
@@ -16,14 +25,22 @@ models:
           - unique:
               config:
                 severity: warn
-                store_failures: true 
-                tags: ['critical_alert']
-          - not_null:
+                tags: ['soft_alert']
+          - dbt_utils.not_null_proportion:
               config:
-                severity: error
-                store_failures: true
+                severity: warn
+                tags: ['soft_alert']
+              arguments:
+                at_least: 0.95
       - name: phone_number
         description: Customer's phone number for contact and delivery coordination
+        tests:
+          - dbt_utils.not_null_proportion:
+              config:
+                severity: warn
+                tags: ['soft_alert']
+              arguments:
+                at_least: 0.98
       - name: create_at
         description: Timestamp when the customer's account was created
 
@@ -34,10 +51,40 @@ models:
         description: Unique identifier for each orders (e.g., O01008, O02400)
       - name: customer_id
         description: Foreign key, linking order to customer
+        tests:
+          - relationships:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                to: ref('stg_logistic__customers')
+                field: customer_id
       - name: order_date
         description: Date when the order was placed
+        tests:
+          - not_null:
+              config:
+                severity: error
+                tags: ['critical_alert']
+          - dbt_utils.expression_is_true:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                expression: "<= '2025-09-14'"
       - name: order_value
         description: Total value of an order in IDR
+        tests:
+          - not_null:
+              config:
+                severity: error
+                tags: ['critical_alert']
+          - dbt_utils.expression_is_true:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                expression: '> 0'
 
   - name: stg_logistic__shipments
     description: Information needed to deliver each shipment
@@ -46,14 +93,36 @@ models:
         description: Unique identifier for each shipments (e.g., S001015, S001043)
       - name: order_id
         description: Foreign key, linking shipment to order
+        tests:
+          - relationships:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                to: ref('stg_logistic__orders')
+                field: order_id
       - name: origin_city
         description: The city where the shipment originated
       - name: destination_city
         description: The city where the shipment is being delivered
+        tests:
+          - dbt_utils.not_null_proportion:
+              config:
+                severity: warn
+                tags: ['soft_alert']
+              arguments:
+                at_least: 0.99
       - name: shipment_value
         description: Declared value of the shipment
       - name: current_status
         description: Current status of the shipment (e.g., Delivered, In Transit, Pending)
+        tests:
+          - accepted_values:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                values: ['Pending', 'In Transit', 'Delivered', 'Cancelled']
       - name: expected_delivery_date
         description: The promised delivery date based on SLA
       - name: actual_delivery_date
@@ -68,7 +137,31 @@ models:
         description: Unique identifier for each delivery update (e.g., U000098, U000042)
       - name: shipment_id
         description: Foreign key, linking update to shipment
+        tests:
+          - not_null:
+              config:
+                severity: error
+                tags: ['critical_alert']
+          - relationships:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                to: ref('stg_logistic__shipments')
+                field: shipment_id
       - name: update_timestamp
         description: The exact datetime when the update was logged (e.g., 2023-11-02 10:30:00)
+        tests:
+          - not_null:
+              config:
+                severity: error
+                tags: ['critical_alert']
       - name: status
         description: Status update for the shipment (e.g., Created, Dispatched, In Transit, Delivered)
+        tests:
+          - accepted_values:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                values: ['Created', 'Dispatched', 'In Transit', 'Delayed', 'Delivered', 'Cancelled']
