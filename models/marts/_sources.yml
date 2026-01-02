@@ -1,7 +1,7 @@
 version: 2
 
 sources:
-  - name: raw_logistic # Logical grouping name for raw sources
+  - name: raw          # Logical grouping name for raw sources
     database: neondb   # Neon database name
     schema: public     # The schema where raw data stored
     tables:

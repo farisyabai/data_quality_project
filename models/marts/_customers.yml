@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: customers
+    columns:
+      - name: customer_id
+        data_tests:
+          - unique:
+              arguments:
+                name: duplicate_customers_customer_id
+              config:
+                severity: error
+                tags: ['critical_alert']
+      - name: email
+        data_tests:
+          - unique:
+              arguments:
+                name: duplicate_customers_email
+              config:
+                severity: warn
+                tags: ['soft_alert']

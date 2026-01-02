@@ -1,63 +1,68 @@
 version: 2
 
-
 models:
-  - name: d1_2_email_pattern_failures
-    tests:
-      - failure_row_rates:        
+  - name: invalid_email_pattern
+    data_tests:
+      - failure_row_rates:
           config:
             severity: warn
             tags: ['soft_alert']        
           arguments:
-            to: stg_logistic__customers
+            name: failure_rate_email_pattern
+            to: test_customers
             failure_rate: 0.02
 
-  - name: d2_1_phone_number_pattern_failures
-    tests:
-      - failure_row_rates:        
+  - name: invalid_phone_num_pattern
+    data_tests:
+      - failure_row_rates:
           config:
             severity: warn
             tags: ['soft_alert'] 
           arguments:
-            to: stg_logistic__customers
+            name: failure_rate_phone_num_pattern
+            to: test_customers
             failure_rate: 0.05
 
-  - name: d2_2_phone_number_length_failures
-    tests:
+  - name: invalid_phone_num_length
+    data_tests:
       - failure_row_rates:        
           config:
             severity: warn
             tags: ['soft_alert'] 
           arguments:
-            to: stg_logistic__customers
+            name: failure_rate_phone_num_length
+            to: test_customers
             failure_rate: 0.05
 
-  - name: d4_stalled_shipments
-    tests:
+  - name: stalled_shipments
+    data_tests:
       - failure_row_rates:        
           config:
             severity: warn
             tags: ['soft_alert'] 
           arguments:
-            to: stg_logistic__shipments
+            name: failure_rate_stalled_shipments
+            to: test_shipments
             failure_rate: 0.05
 
-  - name: d5_teleport_shipments
-    tests:
+  - name: teleport_shipments
+    data_tests:
       - failure_row_rates:        
           config:
             severity: warn
             tags: ['soft_alert'] 
           arguments:
-            to: stg_logistic__shipments
+            name: failure_rate_teleport_shipments
+            to: test_shipments
             failure_rate: 0.02
 
-  - name: d14_missing_actual_delivery_date
-    tests:
+  - name: missing_actual_delivery_date
+    data_tests:
       - failure_row_rates:        
           config:
             severity: error
             tags: ['critical_alert'] 
           arguments:
-            to: stg_logistic__shipments
+            name: failure_rate_missing_actual_delivery_date
+            to: test_shipments
             failure_rate: 0.01

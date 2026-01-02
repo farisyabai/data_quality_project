@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: latest_delivery_updates
+    columns:
+      - name: shipment_id
+        data_tests:
+          - not_null:
+              arguments:
+                name: missing_delivery_updates_shipment_id
+              config:
+                severity: error
+                tags: ['critical_alert']
+      - name: update_timestamp
+        data_tests:
+          - not_null:
+              arguments:
+                name: missing_delivery_updates_timestamp
+              config:
+                severity: error
+                tags: ['critical_alert']
+      - name: status
+        data_tests:
+          - accepted_values:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                name: invalid_delivery_updates_status
+                values: ['Created', 'In Transit', 'Delivered', 'Cancelled']

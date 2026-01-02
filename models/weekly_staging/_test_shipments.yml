@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: test_shipments
+    description: Information needed to deliver each shipment
+    columns:
+      - name: shipment_id
+        description: Unique identifier for each shipments (e.g., S001015, S001043)
+      - name: order_id
+        description: Foreign key, linking shipment to order
+      - name: origin_city
+        description: The city where the shipment originated
+      - name: destination_city
+        description: The city where the shipment is being delivered
+      - name: shipment_value
+        description: Declared value of the shipment
+      - name: current_status
+        description: Current status of the shipment (e.g., Delivered, In Transit, Pending)
+      - name: expected_delivery_date
+        description: The promised delivery date based on SLA
+      - name: actual_delivery_date
+        description: The date when shipment was actually delivered (null if not delivered yet)
+      - name: create_at
+        description: Timestamp when each shipment was created

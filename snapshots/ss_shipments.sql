@@ -1,4 +1,4 @@
-{% snapshot snapshot_shipments %}
+{% snapshot ss_shipments %}
 {{
     config(
       target_schema='snapshots',       
@@ -8,5 +8,5 @@
       invalidate_hard_deletes=True         
     )
 }}
-SELECT * FROM {{ source('raw_logistic','shipments') }}
+SELECT * FROM {{ source('raw','shipments') }}
 {% endsnapshot %}

@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: orders
+    columns:
+      - name: customer_id
+        data_tests:
+          - relationships:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                name: orphan_orders_customer_id
+                to: ref('customers')
+                field: customer_id
+      - name: order_date
+        data_tests:
+          - dbt_utils.expression_is_true:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                name: future_orders_order_date
+                expression: "<= '2025-09-22'"
+      - name: order_value
+        data_tests:
+          - dbt_utils.expression_is_true:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                name: suspicious_orders_order_value
+                expression: '> 0'

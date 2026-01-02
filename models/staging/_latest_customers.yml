@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: latest_customers
+    columns:
+      - name: customer_id
+        data_tests:
+          - not_null:
+              arguments:
+                name: missing_customers_customer_id
+              config:
+                severity: error
+                tags: ['critical_alert']
+      - name: email
+        data_tests:
+          - dbt_utils.not_null_proportion:
+              config:
+                severity: warn
+                tags: ['soft_alert']
+              arguments:
+                name: missing_customers_email
+                at_least: 0.95
+      - name: phone_number
+        data_tests:
+          - dbt_utils.not_null_proportion:
+              config:
+                severity: warn
+                tags: ['soft_alert']
+              arguments:
+                name: missing_customers_phone_num
+                at_least: 0.98
