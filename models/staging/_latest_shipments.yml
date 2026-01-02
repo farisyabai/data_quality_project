@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: latest_shipments
+    columns:
+      - name: destination_city
+        data_tests:
+          - dbt_utils.not_null_proportion:
+              config:
+                severity: warn
+                tags: ['soft_alert']
+              arguments:
+                name: missing_shipments_destination_city
+                at_least: 0.99
+      - name: current_status
+        data_tests:
+          - accepted_values:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                name: invalid_shipments_current_status
+                values: ['Created', 'In Transit', 'Delivered', 'Cancelled']

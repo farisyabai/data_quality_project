@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: delivery_updates
+    columns:
+      - name: shipment_id
+        data_tests:
+          - relationships:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                name: orphan_delivery_updates_shipment_id
+                to: ref('shipments')
+                field: shipment_id

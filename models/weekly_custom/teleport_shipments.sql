@@ -1,3 +1,8 @@
+{{ config(
+    materialized = 'table',
+    tags = ['incident_model']
+) }}
+
 WITH status_rank AS (
     SELECT 
         s.shipment_id,
@@ -14,8 +19,8 @@ WITH status_rank AS (
             END
         ) AS normalized_status,
         CURRENT_TIMESTAMP AS incident_timestamp
-    FROM {{ ref("stg_logistic__shipments") }} AS s
-    LEFT JOIN {{ ref("stg_logistic__delivery_updates") }} AS d
+    FROM {{ ref("test_shipments") }} AS s
+    LEFT JOIN {{ ref("test_delivery_updates") }} AS d
         ON s.shipment_id = d.shipment_id
     GROUP BY s.shipment_id
 )

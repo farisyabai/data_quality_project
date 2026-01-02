@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: test_customers
+    description: Information about customer name, contact or when the accaunt was created)
+    columns:
+      - name: customer_id
+        description: Unique identifier for each customers (e.g., C00004, C00048)
+      - name: customer_name
+        description: Full name of the customer
+      - name: city
+        description: City where customer is based (origin for orders)
+      - name: email
+        description: Customer's registered email address
+      - name: phone_number
+        description: Customer's phone number for contact and delivery coordination
+      - name: create_at
+        description: Timestamp when the customer's account was created

@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: shipments
+    columns:
+      - name: order_id
+        data_tests:
+          - relationships:
+              config:
+                severity: error
+                tags: ['critical_alert']
+              arguments:
+                name: orphan_shipments_order_id
+                to: ref('orders')
+                field: order_id

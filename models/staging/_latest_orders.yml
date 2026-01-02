@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: latest_orders
+    columns:
+      - name: order_date
+        data_tests:
+          - not_null:
+              arguments:
+                name: missing_orders_order_date
+              config:
+                severity: error
+                tags: ['critical_alert']
+      - name: order_value
+        data_tests:
+          - not_null:
+              arguments:
+                name: missing_orders_order_value
+              config:
+                severity: error
+                tags: ['critical_alert']

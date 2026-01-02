@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: test_delivery_updates
+    description: Information about what and when the status of each shipment changed
+    columns:
+      - name: update_id
+        description: Unique identifier for each delivery update (e.g., U000098, U000042)
+      - name: shipment_id
+        description: Foreign key, linking update to shipment
+      - name: update_timestamp
+        description: The exact datetime when the update was logged (e.g., 2023-11-02 10:30:00)
+      - name: status
+        description: Status update for the shipment (e.g., Created, Dispatched, In Transit, Delivered)

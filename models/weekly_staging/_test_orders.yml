@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: test_orders
+    description: Information who, when, how much value of orders
+    columns:
+      - name: order_id
+        description: Unique identifier for each orders (e.g., O01008, O02400)
+      - name: customer_id
+        description: Foreign key, linking order to customer
+      - name: order_date
+        description: Date when the order was placed
+      - name: order_value
+        description: Total value of an order in IDR
