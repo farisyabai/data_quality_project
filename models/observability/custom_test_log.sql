@@ -77,7 +77,7 @@ WITH raw_incidents AS (
 
 final_staged AS (
     SELECT
-        {{ dbt_utils.generate_surrogate_key(['incident_type', 'entity_id', 'incident_data']) }} as incident_id,
+        {{ dbt_utils.generate_surrogate_key(['incident_type', 'entity_id']) }} as incident_id,
         *,
         CURRENT_TIMESTAMP as detected_at
     FROM raw_incidents
