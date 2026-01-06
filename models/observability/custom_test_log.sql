@@ -10,10 +10,7 @@ WITH raw_incidents AS (
         'Invalid Email Pattern' as incident_type,
         'customers' as source_model,
         CAST(customer_id AS TEXT) as entity_id,
-        'Medium' as severity,
-        -- Use row_to_json to keep all the specific business details
-        row_to_json(e.*)::TEXT as incident_data,
-        CURRENT_TIMESTAMP as detected_at
+        row_to_json(e.*)::TEXT as incident_data
     FROM {{ ref('invalid_email_pattern') }} as e
 
     UNION ALL
@@ -23,10 +20,7 @@ WITH raw_incidents AS (
         'Invalid Phone Number Length' as incident_type,
         'customers' as source_model,
         CAST(customer_id AS TEXT) as entity_id,
-        'Medium' as severity,
-        -- Use row_to_json to keep all the specific business details
-        row_to_json(pl.*)::TEXT as incident_data,
-        CURRENT_TIMESTAMP as detected_at
+        row_to_json(pl.*)::TEXT as incident_data
     FROM {{ ref('invalid_phone_num_length') }} as pl
 
     UNION ALL
@@ -36,10 +30,7 @@ WITH raw_incidents AS (
         'Invalid Phone Number Pattern' as incident_type,
         'customers' as source_model,
         CAST(customer_id AS TEXT) as entity_id,
-        'Medium' as severity,
-        -- Use row_to_json to keep all the specific business details
-        row_to_json(pp.*)::TEXT as incident_data,
-        CURRENT_TIMESTAMP as detected_at
+        row_to_json(pp.*)::TEXT as incident_data
     FROM {{ ref('invalid_phone_num_pattern') }} as pp
 
     UNION ALL
@@ -49,10 +40,7 @@ WITH raw_incidents AS (
         'Missing Actual Delivery Date' as incident_type,
         'shipments' as source_model,
         CAST(shipment_id AS TEXT) as entity_id,
-        'Medium' as severity,
-        -- Use row_to_json to keep all the specific business details
-        row_to_json(mdd.*)::TEXT as incident_data,
-        CURRENT_TIMESTAMP as detected_at
+        row_to_json(mdd.*)::TEXT as incident_data
     FROM {{ ref('missing_actual_delivery_date') }} as mdd    
 
     UNION ALL
@@ -62,10 +50,7 @@ WITH raw_incidents AS (
         'Stalled Shipment' as incident_type,
         'shipments' as source_model,
         CAST(shipment_id AS TEXT) as entity_id,
-        'Medium' as severity,
-        -- Use row_to_json to keep all the specific business details
-        row_to_json(ss.*)::TEXT as incident_data,
-        CURRENT_TIMESTAMP as detected_at
+        row_to_json(ss.*)::TEXT as incident_data
     FROM {{ ref('stalled_shipments') }} as ss
 
     UNION ALL
@@ -75,10 +60,7 @@ WITH raw_incidents AS (
         'Suspicious Orders' as incident_type,
         'orders' as source_model,
         CAST(order_id AS TEXT) as entity_id,
-        'Medium' as severity,
-        -- Use row_to_json to keep all the specific business details
-        row_to_json(so.*)::TEXT as incident_data,
-        CURRENT_TIMESTAMP as detected_at
+        row_to_json(so.*)::TEXT as incident_data
     FROM {{ ref('suspicious_orders') }} as so
 
     UNION ALL
@@ -88,20 +70,22 @@ WITH raw_incidents AS (
         'Missing Update Record' as incident_type,
         'delivery_updates' as source_model,
         CAST(shipment_id AS TEXT) as entity_id,
-        'Low' as severity,
-        row_to_json(ts.*)::TEXT as incident_data,
-        CURRENT_TIMESTAMP as detected_at
+        row_to_json(ts.*)::TEXT as incident_data
     FROM {{ ref('teleport_shipments') }} as ts
 
+),
+
+final_staged AS (
+    SELECT
+        {{ dbt_utils.generate_surrogate_key(['incident_type', 'entity_id', 'incident_data']) }} as incident_id,
+        *,
+        CURRENT_TIMESTAMP as detected_at
+    FROM raw_incidents
 )
 
-SELECT
-    -- Create a unique ID for every incident instance
-    {{ dbt_utils.generate_surrogate_key(['incident_type', 'entity_id', 'detected_at']) }} as incident_id,
-    *
-FROM raw_incidents
+SELECT *
+FROM final_staged
 
 {% if is_incremental() %}
-    -- Only add new incidents detected since the last run
-    WHERE detected_at > (SELECT MAX(detected_at) FROM {{ this }})
+    WHERE incident_id NOT IN (SELECT incident_id FROM {{ this }})
 {% endif %}
