@@ -3,8 +3,14 @@
     unique_key = 'incident_id'
 ) }}
 
-{%- set env_prefix = 'prod' if target.name == 'prod' else 'dev' -%}
-{%- set audit_schema = env_prefix ~ '_weekly_generic' -%}
+
+{%- set audit_schema = target.schema ~ '_weekly_generic' -%}
+
+{# 
+   Log for debugging: This will show up in dbt logs 
+   to verify the model is looking in the right place.
+#}
+{% do log("Searching for test audit tables in schema: " ~ audit_schema, info=True) %}
 
 {%- set audit_tables = dbt_utils.get_relations_by_pattern(
     schema_pattern=audit_schema,
@@ -15,27 +21,25 @@ WITH raw_unioned_failures AS (
     {% if audit_tables | length > 0 %}
         {{ dbt_utils.union_relations(relations=audit_tables) }}
     {% else %}
-        -- Fallback if no failure tables exist yet
+        -- Fallback: If no tables found, return empty set
         SELECT 
             NULL::TEXT as _dbt_source_relation,
             NULL::TEXT as customer_id, 
             NULL::TEXT as order_id, 
             NULL::TEXT as shipment_id,
             NULL::TEXT as update_id
-        LIMIT 0
+        WHERE 1=0
     {% endif %}
 ),
 
 standardized_failures AS (
     SELECT        
-        -- The name of the test that failed
         _dbt_source_relation as source_test_table,
         
-        -- Extract just the test name from the full relation string
+        -- Extract test name from the end of the relation string
         split_part(_dbt_source_relation, '.', 3) as test_name,
 
-        -- Capture the actual data that failed as a JSON object
-        -- We exclude 'recorded_at' from here if we want the hash to be stable
+        -- Capture failing row data as JSON
         row_to_json(raw_unioned_failures.*)::TEXT as incident_data,
         
         CURRENT_TIMESTAMP as recorded_at
@@ -53,5 +57,6 @@ SELECT *
 FROM final_processing
 
 {% if is_incremental() %}
+    -- Only insert records that don't already exist in the log
     WHERE incident_id NOT IN (SELECT incident_id FROM {{ this }})
 {% endif %}
